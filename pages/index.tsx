@@ -26,7 +26,9 @@ export default function Home() {
           Go to the github source
         </Link>
       </Box>
-      <MainBox />
+      <div>
+        <MainBox />
+      </div>
     </Container>
   );
 }

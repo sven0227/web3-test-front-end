@@ -26,31 +26,31 @@ interface TabPanelProps {
 
 function TabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
+
   return (
-    <>
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-        {...other}
-      >
-        {value === index && (
-          <Box sx={{ p: 3 }}>
-            {children}
-          </Box>
-        )}
-      </div>
-    </>
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          {children}
+        </Box>
+      )}
+    </div>
   );
 }
 
 function a11yProps(index: number) {
   return {
-    id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
+    id: `full-width-tab-${index}`,
+    'aria-controls': `full-width-tabpanel-${index}`,
   };
 }
+
 export default function MainBox() {
   const [value, setValue] = React.useState(0);
   const [open, setOpen] = React.useState(false);
@@ -59,7 +59,6 @@ export default function MainBox() {
 
   const startAppFunc = async () => {
     try {
-
       const { data } = await axios.post(startApp);
       setMessage("App started!")
       setOpen(true);
@@ -80,40 +79,49 @@ export default function MainBox() {
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <MyButton onClick={startAppFunc}>Start Backend app</MyButton>
-      <MyButton onClick={() => getHistoryFunc()}>Get latest history</MyButton>
-      <MyButton onClick={getAccountsFunc}>Get latest Accounts Info</MyButton>
-      <br />
-      <div style={{ margin: 10 }}>
-        {appStatus.isMigrating && "Migrating...  "}
-        {appStatus.elapsedTime + "min... "}
-        {appStatus.percent + "%...  "}
-        {appStatus.isListening && "Listening Event...  "}
-        {"LatestBlockNumber" + appStatus.latestBlockNumber}
-      </div>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Transfer History" {...a11yProps(0)} />
-          <Tab label="Token Holers" {...a11yProps(1)} />
-        </Tabs>
+    <div>
+      <Box sx={{ width: '100%' }}>
+        <MyButton onClick={startAppFunc}>Start Backend app</MyButton>
+        <MyButton onClick={() => getHistoryFunc()}>Get latest history</MyButton>
+        <MyButton onClick={getAccountsFunc}>Get latest Accounts Info</MyButton>
+        <br />
+        <div style={{ margin: 10 }}>
+          {appStatus.isMigrating && "Migrating...  "}
+          {appStatus.elapsedTime + "min... "}
+          {appStatus.percent + "%...  "}
+          {appStatus.isListening && "Listening Event...  "}
+          {"LatestBlockNumber: " + appStatus.latestBlockNumber}
+        </div>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+          <Tabs
+            value={value}
+            onChange={handleChange}
+            indicatorColor="secondary"
+            textColor="inherit"
+            variant="fullWidth"
+            aria-label="full width tabs example"
+          >
+            <Tab label="Transfer History" {...a11yProps(0)} />
+            <Tab label="Token Holers" {...a11yProps(1)} />
+          </Tabs>
+        </Box>
+        <TabPanel value={value} index={0}>
+          <TransferHistory />
+        </TabPanel>
+        <TabPanel value={value} index={1}>
+          <TokenHolderList />
+        </TabPanel>
+        <Snackbar
+          open={open}
+          autoHideDuration={3000}
+          onClose={handleClose}
+          message={message}
+        >
+          <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+            {message}
+          </Alert>
+        </Snackbar >
       </Box>
-      <TabPanel value={value} index={0}>
-        <TransferHistory />
-      </TabPanel>
-      <TabPanel value={value} index={1}>
-        <TokenHolderList />
-      </TabPanel>
-      <Snackbar
-        open={open}
-        autoHideDuration={3000}
-        onClose={handleClose}
-        message={message}
-      >
-        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
-          {message}
-        </Alert>
-      </Snackbar >
-    </Box>
+    </div>
   )
 }

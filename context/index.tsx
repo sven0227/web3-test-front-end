@@ -58,15 +58,22 @@ export function AppContextProvider({ children }: IAppContextProvider) {
   }
 
   const getAccountsFunc = async (pageNumber = 1, pageSize = 10) => {
-    const data = await axios.post(getAccounts, { pageNumber: pageNumber, pageSize: pageSize });
-    console.log(data);
-    setAccounts(data);
+    try {
+      const data = await axios.post(getAccounts, { pageNumber: pageNumber, pageSize: pageSize });
+      console.log(data);
+      setAccounts(data);
+    } catch (error) {
+    }
   }
 
   const getAppStatusFunc = async (pageNumber = 1, pageSize = 10) => {
-    const { data } = await axios.get(getAppStatus, {});
-    console.log(data.data);
-    setAppStatus(data.data);
+    try {
+      const { data } = await axios.get(getAppStatus, {});
+      console.log(data.data);
+      setAppStatus(data.data);
+    } catch (error) {
+
+    }
   }
 
   return (

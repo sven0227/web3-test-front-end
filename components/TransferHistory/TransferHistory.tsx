@@ -13,15 +13,15 @@ import { getHistory } from '../../src/utils/apiRoutes';
 import { useAppContext } from '../../context';
 
 interface Column {
-	id: 'blockNumber' | 'from' | 'to' | 'value';
+	id: 'blockNumber' | 'from' | 'to' | 'value' | 'txHash';
 	label: string;
 	minWidth?: number;
 	align?: 'right' | 'left' | 'center';
-	format?: (value: number) => string;
+	format?: (value: any) => any;
 }
 
 const columns: readonly Column[] = [
-	{ id: 'blockNumber', label: 'blockNumber', minWidth: 170 },
+	{ id: 'blockNumber', label: 'blockNumber', minWidth: 130 },
 	{ id: 'from', label: 'from', minWidth: 100 },
 	{
 		id: 'to',
@@ -36,31 +36,18 @@ const columns: readonly Column[] = [
 		align: 'left',
 		format: (value: number) => { return (value / 1e6).toString() + '$' }
 	},
+	{
+		id: 'txHash',
+		label: 'txHash',
+		format: (value: string) => <a target={"_blank"} href={'https://etherscan.io/tx/' + value}>{value}</a>
+	}
 ];
-
-interface Data {
-	blockNumber: string;
-	from: string;
-	to: string;
-	value: number;
-}
-
-function createData(
-	blockNumber: string,
-	from: string,
-	to: string,
-	value: number,
-): Data {
-	return { blockNumber, from, to, value };
-}
 
 export default function TransferHistory() {
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
 	// const [rows, setRows] = useState([]);
 	const { history, getHistoryFunc } = useAppContext();
-
-
 
 	useEffect(() => {
 		getHistoryFunc();
@@ -102,7 +89,7 @@ export default function TransferHistory() {
 											const value = row[column.id];
 											return (
 												<TableCell key={column.id} align={column.align}>
-													{column.format && typeof value === 'number'
+													{column.format
 														? column.format(value)
 														: value}
 												</TableCell>
