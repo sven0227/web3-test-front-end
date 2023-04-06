@@ -10,6 +10,7 @@ import axios from "axios";
 import { startApp } from "./utils/apiRoutes";
 import MyButton from "../components/MyButton";
 import { useAppContext } from "../context";
+import MyPage from "../components/MyPage";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -101,14 +102,18 @@ export default function MainBox() {
             variant="fullWidth"
             aria-label="full width tabs example"
           >
-            <Tab label="Transfer History" {...a11yProps(0)} />
-            <Tab label="Token Holers" {...a11yProps(1)} />
+            <Tab label="My Page" {...a11yProps(0)} />
+            <Tab label="Transfer History" {...a11yProps(1)} />
+            <Tab label="Token Holers" {...a11yProps(2)} />
           </Tabs>
         </Box>
         <TabPanel value={value} index={0}>
-          <TransferHistory />
+          <MyPage />
         </TabPanel>
         <TabPanel value={value} index={1}>
+          <TransferHistory />
+        </TabPanel>
+        <TabPanel value={value} index={2}>
           <TokenHolderList />
         </TabPanel>
         <Snackbar
