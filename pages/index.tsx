@@ -9,10 +9,10 @@ import MainBox from '../src/MainBox';
 
 export default function Home() {
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="xl">
       <Box
         sx={{
-          my: 4,
+          my: 2,
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
@@ -20,7 +20,7 @@ export default function Home() {
         }}
       >
         <Typography variant="h4" component="h1" gutterBottom>
-          Web3-Test Dapp : USDC holders and Transfer history
+          Web3-Test Dapp : USDC Holders and Transfer history from 2023.3.1
         </Typography>
         <Link href="/" color="secondary">
           Go to the github source

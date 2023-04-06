@@ -1,12 +1,21 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { getHistory } from "../src/utils/apiRoutes";
+import { getAccounts, getAppStatus, getHistory } from "../src/utils/apiRoutes";
 interface IAppContext {
-  history: Array<any>;
+  history: { data: any[], totalCount: number };
   setHistory: any;
-  accounts: Array<any>
+  accounts: { data: any[] };
   setAccounts: any;
   getHistoryFunc: any;
+  getAccountsFunc: any;
+  appStatus: {
+    elapsedTime: string
+    isMigrating: boolean
+    isListening: boolean
+    percent: string
+    latestBlockNumber: number
+  };
+  getAppStatusFunc: any;
 }
 
 interface IAppContextProvider {
@@ -14,27 +23,50 @@ interface IAppContextProvider {
 }
 
 const defaultState = {
-  history: [],
+  history: { data: [], totalCount: 0 },
   setHistory: () => { },
-  accounts: [],
+  accounts: { data: [] },
   setAccounts: () => { },
   getHistoryFunc: () => { },
+  getAccountsFunc: () => { },
+  appStatus: { elapsedTime: "", isMigrating: false, isListening: false, percent: "", latestBlockNumber: 0 },
+  getAppStatusFunc: () => { },
 }
 
 const AppContext = createContext<IAppContext>(defaultState);
 
 export function AppContextProvider({ children }: IAppContextProvider) {
-  const [history, setHistory] = useState([]);
-  const [accounts, setAccounts] = useState([]);
+  const [history, setHistory] = useState(defaultState.history);
+  const [accounts, setAccounts] = useState(defaultState.accounts);
+  const [appStatus, setAppStatus] = useState(defaultState.appStatus);
 
-  const getHistoryFunc = async () => {
+  useEffect(() => {
+    const timer = setInterval(() => {
+      getAppStatusFunc();
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [])
+
+  const getHistoryFunc = async (pageNumber = 1, pageSize = 10) => {
     try {
-      const { data: data } = await axios.post(getHistory, { pageNumber: 1, pageSize: 10 })
+      const { data: data } = await axios.post(getHistory, { pageNumber: pageNumber, pageSize: pageSize })
       console.log(data);
-      setHistory(data.data)
+      setHistory(data)
     } catch (error) {
       console.log(error);
     }
+  }
+
+  const getAccountsFunc = async (pageNumber = 1, pageSize = 10) => {
+    const data = await axios.post(getAccounts, { pageNumber: pageNumber, pageSize: pageSize });
+    console.log(data);
+    setAccounts(data);
+  }
+
+  const getAppStatusFunc = async (pageNumber = 1, pageSize = 10) => {
+    const { data } = await axios.get(getAppStatus, {});
+    console.log(data.data);
+    setAppStatus(data.data);
   }
 
   return (
@@ -42,7 +74,8 @@ export function AppContextProvider({ children }: IAppContextProvider) {
       value={{
         history, setHistory,
         accounts, setAccounts,
-        getHistoryFunc,
+        getHistoryFunc, getAccountsFunc,
+        appStatus, getAppStatusFunc,
       }}
     >
       {children}

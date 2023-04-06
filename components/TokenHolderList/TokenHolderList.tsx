@@ -9,6 +9,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import axios from 'axios';
 import { getAccounts } from '../../src/utils/apiRoutes';
+import { useAppContext } from '../../context';
 
 interface Column {
   id: 'address' | 'balance';
@@ -43,21 +44,18 @@ function createData(
 export default function TokenHolderList() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [rows, setRows] = React.useState([]);
+  const { accounts, getAccountsFunc } = useAppContext();
   React.useEffect(() => {
-    const getAccountsFunc = async () => {
-      const { data } = await axios.post(getAccounts, { pageNumber: 1, pageSize: 10 });
-      console.log(data);
-      setRows(data);
-    }
-    getAccountsFunc();
+    getAccountsFunc(page + 1, rowsPerPage);
   }, []);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = async (event: unknown, newPage: number) => {
+    await getAccountsFunc(newPage + 1, rowsPerPage);
     setPage(newPage);
   };
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    getAccountsFunc(page + 1, event.target.value);
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
@@ -80,8 +78,7 @@ export default function TokenHolderList() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            {accounts.data
               .map((row, idx) => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={idx}>
@@ -104,7 +101,7 @@ export default function TokenHolderList() {
       <TablePagination
         rowsPerPageOptions={[10, 25, 100]}
         component="div"
-        count={rows.length}
+        count={9999}
         rowsPerPage={rowsPerPage}
         page={page}
         onPageChange={handleChangePage}

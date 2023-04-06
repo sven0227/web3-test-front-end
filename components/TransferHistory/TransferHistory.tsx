@@ -65,11 +65,13 @@ export default function TransferHistory() {
 	useEffect(() => {
 		getHistoryFunc();
 	}, [])
-	const handleChangePage = (event: unknown, newPage: number) => {
+	const handleChangePage = async (event: unknown, newPage: number) => {
+		await getHistoryFunc(newPage + 1, rowsPerPage);
 		setPage(newPage);
 	};
 
-	const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const handleChangeRowsPerPage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+		await getHistoryFunc(page + 1, event.target.value);
 		setRowsPerPage(+event.target.value);
 		setPage(0);
 	};
@@ -92,8 +94,7 @@ export default function TransferHistory() {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{history
-							.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+						{history.data
 							.map((row, idx) => {
 								return (
 									<TableRow hover role="checkbox" tabIndex={-1} key={idx}>
@@ -116,7 +117,7 @@ export default function TransferHistory() {
 			<TablePagination
 				rowsPerPageOptions={[10, 25, 100]}
 				component="div"
-				count={history.length}
+				count={history.totalCount}
 				rowsPerPage={rowsPerPage}
 				page={page}
 				onPageChange={handleChangePage}

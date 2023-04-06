@@ -9,6 +9,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import axios from "axios";
 import { startApp } from "./utils/apiRoutes";
 import MyButton from "../components/MyButton";
+import { useAppContext } from "../context";
 
 const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   props,
@@ -54,6 +55,7 @@ export default function MainBox() {
   const [value, setValue] = React.useState(0);
   const [open, setOpen] = React.useState(false);
   const [message, setMessage] = React.useState("");
+  const { getHistoryFunc, getAccountsFunc, appStatus } = useAppContext();
 
   const startAppFunc = async () => {
     try {
@@ -80,9 +82,16 @@ export default function MainBox() {
   return (
     <Box sx={{ width: '100%' }}>
       <MyButton onClick={startAppFunc}>Start Backend app</MyButton>
-      <MyButton >Get latest history</MyButton>
-      <MyButton >Get latest Accounts Info</MyButton>
-
+      <MyButton onClick={() => getHistoryFunc()}>Get latest history</MyButton>
+      <MyButton onClick={getAccountsFunc}>Get latest Accounts Info</MyButton>
+      <br />
+      <div style={{ margin: 10 }}>
+        {appStatus.isMigrating && "Migrating...  "}
+        {appStatus.elapsedTime + "min... "}
+        {appStatus.percent + "%...  "}
+        {appStatus.isListening && "Listening Event...  "}
+        {"LatestBlockNumber" + appStatus.latestBlockNumber}
+      </div>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Transfer History" {...a11yProps(0)} />
