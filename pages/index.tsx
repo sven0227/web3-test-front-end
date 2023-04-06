@@ -6,6 +6,7 @@ import Link from '../src/Link';
 import { Tab, Table, Tabs } from '@mui/material';
 import MainBox from '../src/MainBox';
 
+
 export default function Home() {
   return (
     <Container maxWidth="lg">
@@ -21,7 +22,7 @@ export default function Home() {
         <Typography variant="h4" component="h1" gutterBottom>
           Web3-Test Dapp : USDC holders and Transfer history
         </Typography>
-        <Link href="/about" color="secondary">
+        <Link href="/" color="secondary">
           Go to the github source
         </Link>
       </Box>

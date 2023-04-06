@@ -7,53 +7,51 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
+import axios from 'axios';
+import { getAccounts } from '../../src/utils/apiRoutes';
 
 interface Column {
-  id: 'address' | 'value';
+  id: 'address' | 'balance';
   label: string;
   minWidth?: number;
   align?: 'right';
-  format?: (value: number) => string;
+  format?: (balance: number) => string;
 }
 
 const columns: readonly Column[] = [
   { id: 'address', label: 'address', minWidth: 170 },
-  { id: 'value', label: 'value', minWidth: 100 },
+  {
+    id: 'balance',
+    label: 'balance', minWidth: 100,
+    format: (balance: number) => { return (balance / 1e6).toString() + '$' }
+  },
 ];
 
 interface Data {
   address: string;
-  value: number;
+  balance: number;
 }
 
 function createData(
   address: string,
-  value: number,
+  balance: number,
 ): Data {
-  return { address, value };
+  return { address, balance };
 }
 
-const rows = [
-  createData('India', 3287263),
-  createData('China', 9596961),
-  createData('Italy', 301340),
-  createData('United States', 9833520),
-  createData('Canada', 9984670),
-  createData('Australia', 7692024),
-  createData('Germany', 357578),
-  createData('Ireland', 70273),
-  createData('Mexico', 1972550),
-  createData('Japan', 377973),
-  createData('France', 640679),
-  createData('United Kingdom', 242495),
-  createData('Russia', 17098246),
-  createData('Nigeria', 923768),
-  createData('Brazil', 8515767),
-];
 
 export default function TokenHolderList() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rows, setRows] = React.useState([]);
+  React.useEffect(() => {
+    const getAccountsFunc = async () => {
+      const { data } = await axios.post(getAccounts, { pageNumber: 1, pageSize: 10 });
+      console.log(data);
+      setRows(data);
+    }
+    getAccountsFunc();
+  }, []);
 
   const handleChangePage = (event: unknown, newPage: number) => {
     setPage(newPage);
@@ -69,12 +67,12 @@ export default function TokenHolderList() {
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
-            <TableRow>
+            <TableRow >
               {columns.map((column) => (
                 <TableCell
                   key={column.id}
                   align={column.align}
-                  style={{ minWidth: column.minWidth }}
+                  style={{ minWidth: column.minWidth, height: 1 }}
                 >
                   {column.label}
                 </TableCell>

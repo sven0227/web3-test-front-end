@@ -10,6 +10,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import axios from 'axios';
 import { getHistory } from '../../src/utils/apiRoutes';
+import { useAppContext } from '../../context';
 
 interface Column {
 	id: 'blockNumber' | 'from' | 'to' | 'value';
@@ -33,7 +34,7 @@ const columns: readonly Column[] = [
 		label: 'value',
 		minWidth: 170,
 		align: 'left',
-		format: (value: number) => { return (value / 1e6).toString() }
+		format: (value: number) => { return (value / 1e6).toString() + '$' }
 	},
 ];
 
@@ -53,39 +54,15 @@ function createData(
 	return { blockNumber, from, to, value };
 }
 
-// const rows = [
-// 	createData('India', 'IN', "1324171354", 3287263),
-// 	createData('China', 'CN', "1403500365", 9596961),
-// 	createData('Italy', 'IT', "60483973", 301340),
-// 	createData('United States', 'US', "327167434", 9833520),
-// 	createData('Canada', 'CA', "37602103", 9984670),
-// 	createData('Australia', 'AU', "25475400", 7692024),
-// 	createData('Germany', 'DE', "83019200", 357578),
-// 	createData('Ireland', 'IE', "4857000", 70273),
-// 	createData('Mexico', 'MX', "126577691", 1972550),
-// 	createData('Japan', 'JP', "126317000", 377973),
-// 	createData('France', 'FR', "67022000", 640679),
-// 	createData('United Kingdom', 'GB', "67545757", 242495),
-// 	createData('Russia', 'RU', "146793744", 17098246),
-// 	createData('Nigeria', 'NG', "200962417", 923768),
-// 	createData('Brazil', 'BR', "210147125", 8515767),
-// ];
-
 export default function TransferHistory() {
 	const [page, setPage] = useState(0);
 	const [rowsPerPage, setRowsPerPage] = useState(10);
-	const [rows, setRows] = useState([]);
+	// const [rows, setRows] = useState([]);
+	const { history, getHistoryFunc } = useAppContext();
+
+
 
 	useEffect(() => {
-		const getHistoryFunc = async () => {
-			try {
-				const { data: data } = await axios.post(getHistory, { pageNumber: 1, pageSize: 10 })
-				console.log(data);
-				setRows(data.data)
-			} catch (error) {
-
-			}
-		}
 		getHistoryFunc();
 	}, [])
 	const handleChangePage = (event: unknown, newPage: number) => {
@@ -115,7 +92,7 @@ export default function TransferHistory() {
 						</TableRow>
 					</TableHead>
 					<TableBody>
-						{rows
+						{history
 							.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
 							.map((row, idx) => {
 								return (
@@ -139,7 +116,7 @@ export default function TransferHistory() {
 			<TablePagination
 				rowsPerPageOptions={[10, 25, 100]}
 				component="div"
-				count={rows.length}
+				count={history.length}
 				rowsPerPage={rowsPerPage}
 				page={page}
 				onPageChange={handleChangePage}
