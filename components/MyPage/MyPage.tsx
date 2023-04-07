@@ -2,7 +2,7 @@
 export default function MyPage() {
   return (
     <div>
-      <h1>Voldo's assesments test</h1>
+      <h1>Voldo&apos;s assesments test</h1>
       <h2>
         <span style={{ marginRight: 10 }}>- Please see my answers on</span>
         <a
